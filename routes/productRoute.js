@@ -33,4 +33,39 @@ router.get('/product',async(req,res)=>{
     }
     }
 )
+router.put('/update/:id',uploads.single("images"),async(req,res)=>{
+    try {
+        const id = req.params.id;
+        const {pname,price,stock,description} = req.body
+        const updateProduct = {
+            pname,
+            price,
+            stock,
+            description,
+        }
+        if(req.file){
+            updateProduct.images = [req.file.filename];
+        }
+         const product = await productModel.findByIdAndUpdate(id,updateProduct);
+         if(!product){
+            res.status(404).send({message:"product not found"})
+         }
+        res.status(200).send({message:"product updated successfully"})
+    } catch (error) {
+        console.log(error)
+    }
+    }
+)
+
+router.delete('/delete/:id',async (req,res)=>{
+    try {
+        const {id} = req.params;
+        await productModel.findByIdAndDelete(id)
+        res.status(200).send({message:"product deleted successfully"})
+    } catch (error) {
+        console.log(error)
+    }
+
+})
+
 module.exports = router
